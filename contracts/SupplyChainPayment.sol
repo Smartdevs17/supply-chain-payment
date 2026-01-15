@@ -76,5 +76,11 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     event OrderCompleted(uint256 indexed orderId, uint256 timestamp);
     event OrderCancelled(uint256 indexed orderId, uint256 refundAmount);
     
+    // Modifiers
+    modifier onlyBuyer(uint256 _orderId) {
+        require(orders[_orderId].buyer == msg.sender, "Only buyer can perform this action");
+        _;
+    }
+    
     constructor() Ownable(msg.sender) {}
 }
