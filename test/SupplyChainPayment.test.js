@@ -59,4 +59,34 @@ describe("SupplyChainPayment", function () {
             ).to.be.revertedWith("Name cannot be empty");
         });
     });
+
+    describe("Supplier Verification", function () {
+        beforeEach(async function () {
+            await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+        });
+
+        it("Should allow owner to verify supplier", async function () {
+            await supplyChainPayment.connect(owner).verifySupplier(supplier.address);
+            
+            const supplierData = await supplyChainPayment.getSupplier(supplier.address);
+            expect(supplierData.isVerified).to.equal(true);
+        });
+
+        it("Should emit SupplierVerified event", async function () {
+            await expect(supplyChainPayment.connect(owner).verifySupplier(supplier.address))
+                .to.emit(supplyChainPayment, "SupplierVerified");
+        });
+
+        it("Should not allow non-owner to verify", async function () {
+            await expect(
+                supplyChainPayment.connect(buyer).verifySupplier(supplier.address)
+            ).to.be.reverted;
+        });
+
+        it("Should not verify unregistered supplier", async function () {
+            await expect(
+                supplyChainPayment.connect(owner).verifySupplier(addr1.address)
+            ).to.be.revertedWith("Supplier not registered");
+        });
+    });
 });
