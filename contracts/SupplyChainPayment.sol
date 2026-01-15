@@ -389,4 +389,13 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         (bool success, ) = payable(owner()).call{value: amount}("");
         require(success, "Withdrawal failed");
     }
+    
+    /**
+     * @dev Update platform fee percentage (only owner)
+     * @param _newFeePercentage New fee percentage (0-10)
+     */
+    function updatePlatformFee(uint256 _newFeePercentage) external onlyOwner {
+        require(_newFeePercentage <= 10, "Fee cannot exceed 10%");
+        platformFeePercentage = _newFeePercentage;
+    }
 }
