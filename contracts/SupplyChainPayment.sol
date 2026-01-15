@@ -92,5 +92,11 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         _;
     }
     
+    modifier validSupplier(address _supplier) {
+        require(suppliers[_supplier].supplierAddress != address(0), "Supplier not registered");
+        require(suppliers[_supplier].isVerified, "Supplier not verified");
+        _;
+    }
+    
     constructor() Ownable(msg.sender) {}
 }
