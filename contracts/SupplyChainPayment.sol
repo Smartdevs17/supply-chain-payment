@@ -59,5 +59,7 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     mapping(address => uint256[]) public buyerOrders;
     mapping(address => uint256[]) public supplierOrders;
     
+    uint256 public orderCounter;
+    
     constructor() Ownable(msg.sender) {}
 }
