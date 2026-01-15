@@ -438,4 +438,8 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     function getMilestoneCount(uint256 _orderId) external view returns (uint256) {
         return orders[_orderId].milestones.length;
     }
+    
+    function getBuyerOrders(address _buyer) external view returns (uint256[] memory) {
+        return buyerOrders[_buyer];
+    }
 }
