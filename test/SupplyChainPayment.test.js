@@ -89,4 +89,58 @@ describe("SupplyChainPayment", function () {
             ).to.be.revertedWith("Supplier not registered");
         });
     });
+
+    describe("Order Creation", function () {
+        beforeEach(async function () {
+            await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+            await supplyChainPayment.connect(owner).verifySupplier(supplier.address);
+        });
+
+        it("Should allow buyer to create order", async function () {
+            const orderAmount = ethers.parseEther("1.0");
+            await supplyChainPayment.connect(buyer).createOrder(
+                supplier.address,
+                "100 widgets",
+                { value: orderAmount }
+            );
+
+            const order = await supplyChainPayment.getOrder(0);
+            expect(order.buyer).to.equal(buyer.address);
+            expect(order.supplier).to.equal(supplier.address);
+            expect(order.totalAmount).to.equal(orderAmount);
+        });
+
+        it("Should emit OrderCreated event", async function () {
+            const orderAmount = ethers.parseEther("1.0");
+            await expect(
+                supplyChainPayment.connect(buyer).createOrder(
+                    supplier.address,
+                    "100 widgets",
+                    { value: orderAmount }
+                )
+            ).to.emit(supplyChainPayment, "OrderCreated");
+        });
+
+        it("Should not allow order with unverified supplier", async function () {
+            await supplyChainPayment.connect(addr1).registerSupplier("Unverified", "test@test.com");
+            
+            await expect(
+                supplyChainPayment.connect(buyer).createOrder(
+                    addr1.address,
+                    "Test order",
+                    { value: ethers.parseEther("1.0") }
+                )
+            ).to.be.revertedWith("Supplier not verified");
+        });
+
+        it("Should not allow zero value order", async function () {
+            await expect(
+                supplyChainPayment.connect(buyer).createOrder(
+                    supplier.address,
+                    "Test order",
+                    { value: 0 }
+                )
+            ).to.be.revertedWith("Order amount must be greater than 0");
+        });
+    });
 });
