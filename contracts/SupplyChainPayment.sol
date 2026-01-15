@@ -317,4 +317,46 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit DisputeRaised(_orderId, msg.sender, _reason);
     }
+    
+    /**
+     * @dev Resolve dispute (only owner)
+     * @param _orderId Order ID
+     * @param _inFavorOfSupplier True if resolving in favor of supplier
+     */
+    function resolveDispute(
+        uint256 _orderId,
+        bool _inFavorOfSupplier
+    ) external orderExists(_orderId) onlyOwner nonReentrant {
+        Order storage order = orders[_orderId];
+        require(order.status == OrderStatus.Disputed, "Order not in dispute");
+        
+        uint256 remainingAmount = order.totalAmount - order.paidAmount;
+        
+        if (_inFavorOfSupplier) {
+            // Pay remaining amount to supplier
+            if (remainingAmount > 0) {
+                uint256 platformFee = (remainingAmount * platformFeePercentage) / 100;
+                uint256 supplierPayment = remainingAmount - platformFee;
+                
+                totalPlatformFees += platformFee;
+                suppliers[order.supplier].totalAmountEarned += supplierPayment;
+                
+                (bool success, ) = payable(order.supplier).call{value: supplierPayment}("");
+                require(success, "Payment transfer failed");
+                
+                order.paidAmount = order.totalAmount;
+            }
+            order.status = OrderStatus.Completed;
+            suppliers[order.supplier].totalOrdersCompleted++;
+        } else {
+            // Refund remaining amount to buyer
+            if (remainingAmount > 0) {
+                (bool success, ) = payable(order.buyer).call{value: remainingAmount}("");
+                require(success, "Refund transfer failed");
+            }
+            order.status = OrderStatus.Cancelled;
+        }
+        
+        emit DisputeResolved(_orderId, msg.sender, _inFavorOfSupplier);
+    }
 }
