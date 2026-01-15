@@ -200,4 +200,23 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit MilestoneAdded(_orderId, order.milestones.length - 1, _description, _paymentPercentage);
     }
+    
+    /**
+     * @dev Start order (move to InProgress)
+     * @param _orderId Order ID
+     */
+    function startOrder(uint256 _orderId) external orderExists(_orderId) onlyBuyer(_orderId) {
+        Order storage order = orders[_orderId];
+        require(order.status == OrderStatus.Created, "Order already started");
+        require(order.milestones.length > 0, "Must add at least one milestone");
+        
+        // Verify milestones add up to 100%
+        uint256 totalPercentage = 0;
+        for (uint256 i = 0; i < order.milestones.length; i++) {
+            totalPercentage += order.milestones[i].paymentPercentage;
+        }
+        require(totalPercentage == 100, "Milestones must total 100%");
+        
+        order.status = OrderStatus.InProgress;
+    }
 }
