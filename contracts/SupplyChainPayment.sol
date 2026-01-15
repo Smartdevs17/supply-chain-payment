@@ -219,4 +219,24 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         order.status = OrderStatus.InProgress;
     }
+    
+    /**
+     * @dev Mark milestone as completed (supplier)
+     * @param _orderId Order ID
+     * @param _milestoneIndex Milestone index
+     */
+    function completeMilestone(
+        uint256 _orderId,
+        uint256 _milestoneIndex
+    ) external orderExists(_orderId) onlySupplier(_orderId) {
+        Order storage order = orders[_orderId];
+        require(order.status == OrderStatus.InProgress, "Order not in progress");
+        require(_milestoneIndex < order.milestones.length, "Invalid milestone index");
+        require(!order.milestones[_milestoneIndex].isCompleted, "Milestone already completed");
+        
+        order.milestones[_milestoneIndex].isCompleted = true;
+        order.milestones[_milestoneIndex].completionDate = block.timestamp;
+        
+        emit MilestoneCompleted(_orderId, _milestoneIndex, block.timestamp);
+    }
 }
