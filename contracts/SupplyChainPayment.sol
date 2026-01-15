@@ -87,5 +87,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         _;
     }
     
+    modifier orderExists(uint256 _orderId) {
+        require(_orderId < orderCounter, "Order does not exist");
+        _;
+    }
+    
     constructor() Ownable(msg.sender) {}
 }
