@@ -133,4 +133,36 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         suppliers[_supplier].isVerified = true;
         emit SupplierVerified(_supplier, block.timestamp);
     }
+    
+    /**
+     * @dev Create a new order with escrow
+     * @param _supplier Supplier address
+     * @param _productDescription Description of products/services
+     */
+    function createOrder(
+        address _supplier,
+        string memory _productDescription
+    ) external payable validSupplier(_supplier) {
+        require(msg.value > 0, "Order amount must be greater than 0");
+        require(bytes(_productDescription).length > 0, "Product description required");
+        require(_supplier != msg.sender, "Cannot create order with yourself");
+        
+        uint256 orderId = orderCounter++;
+        
+        Order storage newOrder = orders[orderId];
+        newOrder.orderId = orderId;
+        newOrder.buyer = msg.sender;
+        newOrder.supplier = _supplier;
+        newOrder.productDescription = _productDescription;
+        newOrder.totalAmount = msg.value;
+        newOrder.paidAmount = 0;
+        newOrder.createdDate = block.timestamp;
+        newOrder.status = OrderStatus.Created;
+        newOrder.disputeRaised = false;
+        
+        buyerOrders[msg.sender].push(orderId);
+        supplierOrders[_supplier].push(orderId);
+        
+        emit OrderCreated(orderId, msg.sender, _supplier, msg.value);
+    }
 }
