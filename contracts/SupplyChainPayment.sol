@@ -99,4 +99,26 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     constructor() Ownable(msg.sender) {}
+    
+    /**
+     * @dev Register as a supplier
+     * @param _name Supplier name
+     * @param _contactInfo Contact information
+     */
+    function registerSupplier(string memory _name, string memory _contactInfo) external {
+        require(suppliers[msg.sender].supplierAddress == address(0), "Supplier already registered");
+        require(bytes(_name).length > 0, "Name cannot be empty");
+        
+        suppliers[msg.sender] = Supplier({
+            supplierAddress: msg.sender,
+            name: _name,
+            contactInfo: _contactInfo,
+            isVerified: false,
+            totalOrdersCompleted: 0,
+            totalAmountEarned: 0,
+            registrationDate: block.timestamp
+        });
+        
+        emit SupplierRegistered(msg.sender, _name, block.timestamp);
+    }
 }
