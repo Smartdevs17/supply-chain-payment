@@ -28,4 +28,35 @@ describe("SupplyChainPayment", function () {
             expect(await supplyChainPayment.totalPlatformFees()).to.equal(0);
         });
     });
+
+    describe("Supplier Registration", function () {
+        it("Should allow supplier to register", async function () {
+            await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+            
+            const supplierData = await supplyChainPayment.getSupplier(supplier.address);
+            expect(supplierData.name).to.equal("Test Supplier");
+            expect(supplierData.contactInfo).to.equal("test@supplier.com");
+            expect(supplierData.isVerified).to.equal(false);
+        });
+
+        it("Should emit SupplierRegistered event", async function () {
+            await expect(supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com"))
+                .to.emit(supplyChainPayment, "SupplierRegistered")
+                .withArgs(supplier.address, "Test Supplier", await ethers.provider.getBlock('latest').then(b => b.timestamp + 1));
+        });
+
+        it("Should not allow duplicate registration", async function () {
+            await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+            
+            await expect(
+                supplyChainPayment.connect(supplier).registerSupplier("Test Supplier 2", "test2@supplier.com")
+            ).to.be.revertedWith("Supplier already registered");
+        });
+
+        it("Should not allow empty name", async function () {
+            await expect(
+                supplyChainPayment.connect(supplier).registerSupplier("", "test@supplier.com")
+            ).to.be.revertedWith("Name cannot be empty");
+        });
+    });
 });
