@@ -143,4 +143,48 @@ describe("SupplyChainPayment", function () {
             ).to.be.revertedWith("Order amount must be greater than 0");
         });
     });
+
+    describe("Milestone Management", function () {
+        beforeEach(async function () {
+            await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+            await supplyChainPayment.connect(owner).verifySupplier(supplier.address);
+            await supplyChainPayment.connect(buyer).createOrder(
+                supplier.address,
+                "100 widgets",
+                { value: ethers.parseEther("1.0") }
+            );
+        });
+
+        it("Should allow buyer to add milestone", async function () {
+            await supplyChainPayment.connect(buyer).addMilestone(0, "Design approval", 30);
+            
+            const milestoneCount = await supplyChainPayment.getMilestoneCount(0);
+            expect(milestoneCount).to.equal(1);
+            
+            const milestone = await supplyChainPayment.getMilestone(0, 0);
+            expect(milestone.description).to.equal("Design approval");
+            expect(milestone.paymentPercentage).to.equal(30);
+        });
+
+        it("Should emit MilestoneAdded event", async function () {
+            await expect(
+                supplyChainPayment.connect(buyer).addMilestone(0, "Design approval", 30)
+            ).to.emit(supplyChainPayment, "MilestoneAdded");
+        });
+
+        it("Should not allow non-buyer to add milestone", async function () {
+            await expect(
+                supplyChainPayment.connect(supplier).addMilestone(0, "Test", 30)
+            ).to.be.revertedWith("Only buyer can perform this action");
+        });
+
+        it("Should not allow milestones exceeding 100%", async function () {
+            await supplyChainPayment.connect(buyer).addMilestone(0, "Milestone 1", 60);
+            await supplyChainPayment.connect(buyer).addMilestone(0, "Milestone 2", 30);
+            
+            await expect(
+                supplyChainPayment.connect(buyer).addMilestone(0, "Milestone 3", 20)
+            ).to.be.revertedWith("Total percentage exceeds 100%");
+        });
+    });
 });
