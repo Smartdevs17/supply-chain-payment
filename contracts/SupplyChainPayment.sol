@@ -82,5 +82,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         _;
     }
     
+    modifier onlySupplier(uint256 _orderId) {
+        require(orders[_orderId].supplier == msg.sender, "Only supplier can perform this action");
+        _;
+    }
+    
     constructor() Ownable(msg.sender) {}
 }
