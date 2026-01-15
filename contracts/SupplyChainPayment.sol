@@ -69,6 +69,7 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     event OrderCreated(uint256 indexed orderId, address indexed buyer, address indexed supplier, uint256 amount);
     event MilestoneAdded(uint256 indexed orderId, uint256 milestoneIndex, string description, uint256 percentage);
     event MilestoneCompleted(uint256 indexed orderId, uint256 milestoneIndex, uint256 timestamp);
+    event MilestoneApproved(uint256 indexed orderId, uint256 milestoneIndex, uint256 paymentAmount);
     
     constructor() Ownable(msg.sender) {}
 }
