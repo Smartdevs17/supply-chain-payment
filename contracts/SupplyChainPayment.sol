@@ -376,4 +376,17 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit OrderCancelled(_orderId, refundAmount);
     }
+    
+    /**
+     * @dev Withdraw platform fees (only owner)
+     */
+    function withdrawPlatformFees() external onlyOwner nonReentrant {
+        uint256 amount = totalPlatformFees;
+        require(amount > 0, "No fees to withdraw");
+        
+        totalPlatformFees = 0;
+        
+        (bool success, ) = payable(owner()).call{value: amount}("");
+        require(success, "Withdrawal failed");
+    }
 }
