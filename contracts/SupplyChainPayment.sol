@@ -121,4 +121,16 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit SupplierRegistered(msg.sender, _name, block.timestamp);
     }
+    
+    /**
+     * @dev Verify a supplier (only owner)
+     * @param _supplier Supplier address to verify
+     */
+    function verifySupplier(address _supplier) external onlyOwner {
+        require(suppliers[_supplier].supplierAddress != address(0), "Supplier not registered");
+        require(!suppliers[_supplier].isVerified, "Supplier already verified");
+        
+        suppliers[_supplier].isVerified = true;
+        emit SupplierVerified(_supplier, block.timestamp);
+    }
 }
