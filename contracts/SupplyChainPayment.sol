@@ -359,4 +359,21 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit DisputeResolved(_orderId, msg.sender, _inFavorOfSupplier);
     }
+    
+    /**
+     * @dev Cancel order (only if not started)
+     * @param _orderId Order ID
+     */
+    function cancelOrder(uint256 _orderId) external orderExists(_orderId) onlyBuyer(_orderId) nonReentrant {
+        Order storage order = orders[_orderId];
+        require(order.status == OrderStatus.Created, "Can only cancel created orders");
+        
+        order.status = OrderStatus.Cancelled;
+        uint256 refundAmount = order.totalAmount;
+        
+        (bool success, ) = payable(order.buyer).call{value: refundAmount}("");
+        require(success, "Refund transfer failed");
+        
+        emit OrderCancelled(_orderId, refundAmount);
+    }
 }
