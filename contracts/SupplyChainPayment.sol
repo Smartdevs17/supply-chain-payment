@@ -239,4 +239,57 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         
         emit MilestoneCompleted(_orderId, _milestoneIndex, block.timestamp);
     }
+    
+    /**
+     * @dev Approve milestone and release payment (buyer)
+     * @param _orderId Order ID
+     * @param _milestoneIndex Milestone index
+     */
+    function approveMilestone(
+        uint256 _orderId,
+        uint256 _milestoneIndex
+    ) external orderExists(_orderId) onlyBuyer(_orderId) nonReentrant {
+        Order storage order = orders[_orderId];
+        require(order.status == OrderStatus.InProgress, "Order not in progress");
+        require(_milestoneIndex < order.milestones.length, "Invalid milestone index");
+        require(order.milestones[_milestoneIndex].isCompleted, "Milestone not completed");
+        require(!order.milestones[_milestoneIndex].isApproved, "Milestone already approved");
+        
+        Milestone storage milestone = order.milestones[_milestoneIndex];
+        milestone.isApproved = true;
+        milestone.approvalDate = block.timestamp;
+        
+        // Calculate payment amount
+        uint256 paymentAmount = (order.totalAmount * milestone.paymentPercentage) / 100;
+        uint256 platformFee = (paymentAmount * platformFeePercentage) / 100;
+        uint256 supplierPayment = paymentAmount - platformFee;
+        
+        order.paidAmount += paymentAmount;
+        totalPlatformFees += platformFee;
+        
+        // Update supplier stats
+        suppliers[order.supplier].totalAmountEarned += supplierPayment;
+        
+        // Transfer payment to supplier
+        (bool success, ) = payable(order.supplier).call{value: supplierPayment}("");
+        require(success, "Payment transfer failed");
+        
+        emit MilestoneApproved(_orderId, _milestoneIndex, supplierPayment);
+        emit PaymentReleased(_orderId, order.supplier, supplierPayment);
+        
+        // Check if all milestones are approved
+        bool allApproved = true;
+        for (uint256 i = 0; i < order.milestones.length; i++) {
+            if (!order.milestones[i].isApproved) {
+                allApproved = false;
+                break;
+            }
+        }
+        
+        if (allApproved) {
+            order.status = OrderStatus.Completed;
+            suppliers[order.supplier].totalOrdersCompleted++;
+            emit OrderCompleted(_orderId, block.timestamp);
+        }
+    }
 }
