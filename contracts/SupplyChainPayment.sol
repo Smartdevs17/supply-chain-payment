@@ -434,4 +434,8 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         require(_milestoneIndex < orders[_orderId].milestones.length, "Invalid milestone index");
         return orders[_orderId].milestones[_milestoneIndex];
     }
+    
+    function getMilestoneCount(uint256 _orderId) external view returns (uint256) {
+        return orders[_orderId].milestones.length;
+    }
 }
