@@ -429,4 +429,9 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
             order.disputeRaised
         );
     }
+    
+    function getMilestone(uint256 _orderId, uint256 _milestoneIndex) external view returns (Milestone memory) {
+        require(_milestoneIndex < orders[_orderId].milestones.length, "Invalid milestone index");
+        return orders[_orderId].milestones[_milestoneIndex];
+    }
 }
