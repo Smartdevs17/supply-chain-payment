@@ -63,5 +63,8 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     uint256 public platformFeePercentage = 1;
     uint256 public totalPlatformFees;
     
+    // Events
+    event SupplierRegistered(address indexed supplier, string name, uint256 timestamp);
+    
     constructor() Ownable(msg.sender) {}
 }
