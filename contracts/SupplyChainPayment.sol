@@ -65,6 +65,7 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     
     // Events
     event SupplierRegistered(address indexed supplier, string name, uint256 timestamp);
+    event SupplierVerified(address indexed supplier, uint256 timestamp);
     
     constructor() Ownable(msg.sender) {}
 }
