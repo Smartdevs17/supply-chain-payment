@@ -404,4 +404,29 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     function getSupplier(address _supplier) external view returns (Supplier memory) {
         return suppliers[_supplier];
     }
+    
+    function getOrder(uint256 _orderId) external view returns (
+        uint256 orderId,
+        address buyer,
+        address supplier,
+        string memory productDescription,
+        uint256 totalAmount,
+        uint256 paidAmount,
+        uint256 createdDate,
+        OrderStatus status,
+        bool disputeRaised
+    ) {
+        Order storage order = orders[_orderId];
+        return (
+            order.orderId,
+            order.buyer,
+            order.supplier,
+            order.productDescription,
+            order.totalAmount,
+            order.paidAmount,
+            order.createdDate,
+            order.status,
+            order.disputeRaised
+        );
+    }
 }
