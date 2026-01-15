@@ -292,4 +292,29 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
             emit OrderCompleted(_orderId, block.timestamp);
         }
     }
+    
+    /**
+     * @dev Raise a dispute
+     * @param _orderId Order ID
+     * @param _reason Dispute reason
+     */
+    function raiseDispute(
+        uint256 _orderId,
+        string memory _reason
+    ) external orderExists(_orderId) {
+        Order storage order = orders[_orderId];
+        require(
+            msg.sender == order.buyer || msg.sender == order.supplier,
+            "Only buyer or supplier can raise dispute"
+        );
+        require(order.status == OrderStatus.InProgress, "Can only dispute in-progress orders");
+        require(!order.disputeRaised, "Dispute already raised");
+        require(bytes(_reason).length > 0, "Reason required");
+        
+        order.disputeRaised = true;
+        order.disputeReason = _reason;
+        order.status = OrderStatus.Disputed;
+        
+        emit DisputeRaised(_orderId, msg.sender, _reason);
+    }
 }
