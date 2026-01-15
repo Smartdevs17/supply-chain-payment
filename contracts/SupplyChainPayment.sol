@@ -398,4 +398,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         require(_newFeePercentage <= 10, "Fee cannot exceed 10%");
         platformFeePercentage = _newFeePercentage;
     }
+    
+    // View functions
+    
+    function getSupplier(address _supplier) external view returns (Supplier memory) {
+        return suppliers[_supplier];
+    }
 }
