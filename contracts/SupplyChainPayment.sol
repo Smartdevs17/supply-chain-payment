@@ -61,6 +61,7 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     
     uint256 public orderCounter;
     uint256 public platformFeePercentage = 1;
+    uint256 public totalPlatformFees;
     
     constructor() Ownable(msg.sender) {}
 }
