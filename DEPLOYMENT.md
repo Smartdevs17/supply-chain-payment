@@ -24,6 +24,13 @@
 - **Contract Address**: `0xdbaB412015d07b623b946703a58Ff84220122Be6`
 - **Deployer Address**: `0x575109e921C6d6a1Cb7cA60Be0191B10950AfA6C`
 - **Deployment Date**: 2026-01-16
+
+#### 5. SupplyChainToken (ERC20)
+- **Contract Address**: `0x65Ef55613ac14d04D3bcB04C65Aab4A6BCbA8787`
+- **Deployer Address**: `0x575109e921C6d6a1Cb7cA60Be0191B10950AfA6C`
+- **Deployment Date**: 2026-01-16
+- **Token Symbol**: SCT
+- **Initial Supply**: 1,000,000 SCT
 - **Transaction Hash**: (Check BaseScan for details)
 
 ### Contract Configuration
@@ -45,6 +52,9 @@ npx hardhat verify --network baseSepolia 0xcbd1D25dD5C0b026a4A1487b529c3EfC89C27
 
 # ReputationSystem
 npx hardhat verify --network baseSepolia 0xdbaB412015d07b623b946703a58Ff84220122Be6
+
+# SupplyChainToken
+npx hardhat verify --network baseSepolia 0x65Ef55613ac14d04D3bcB04C65Aab4A6BCbA8787
 ```
 
 ### Contract Links
@@ -52,6 +62,7 @@ npx hardhat verify --network baseSepolia 0xdbaB412015d07b623b946703a58Ff84220122
 - **SupplierRegistry**: https://sepolia.basescan.org/address/0xD6A411ABaA95f017961083583cCbECbB07e8BD30
 - **ProductCatalog**: https://sepolia.basescan.org/address/0xcbd1D25dD5C0b026a4A1487b529c3EfC89C278C8
 - **ReputationSystem**: https://sepolia.basescan.org/address/0xdbaB412015d07b623b946703a58Ff84220122Be6
+- **SupplyChainToken**: https://sepolia.basescan.org/address/0x65Ef55613ac14d04D3bcB04C65Aab4A6BCbA8787
 - **Network Explorer**: https://sepolia.base.org
 
 ### Next Steps
