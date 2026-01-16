@@ -16,11 +16,10 @@ async function main() {
 
     const contractAddress = await supplyChainPayment.getAddress();
     console.log("SupplyChainPayment deployed to:", contractAddress);
-    console.log("Platform fee percentage:", await supplyChainPayment.platformFeePercentage(), "%");
 
-    console.log("\nDeployment successful!");
-    console.log("Save this contract address for verification and frontend integration");
-    console.log("\nTo verify on BaseScan, run:");
+    console.log("\n✅ Deployment successful!");
+    console.log("📝 Contract Address:", contractAddress);
+    console.log("\n🔍 To verify on BaseScan, run:");
     console.log(`npx hardhat verify --network baseSepolia ${contractAddress}`);
 }
 
