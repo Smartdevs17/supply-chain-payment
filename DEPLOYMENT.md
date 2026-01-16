@@ -14,6 +14,11 @@
 - **Contract Address**: `0xD6A411ABaA95f017961083583cCbECbB07e8BD30`
 - **Deployer Address**: `0x575109e921C6d6a1Cb7cA60Be0191B10950AfA6C`
 - **Deployment Date**: 2026-01-16
+
+#### 3. ProductCatalog
+- **Contract Address**: `0xcbd1D25dD5C0b026a4A1487b529c3EfC89C278C8`
+- **Deployer Address**: `0x575109e921C6d6a1Cb7cA60Be0191B10950AfA6C`
+- **Deployment Date**: 2026-01-16
 - **Transaction Hash**: (Check BaseScan for details)
 
 ### Contract Configuration
@@ -29,11 +34,15 @@ npx hardhat verify --network baseSepolia 0x539653dd4b32F34A8a319FCE7963D60Aa7804
 
 # SupplierRegistry
 npx hardhat verify --network baseSepolia 0xD6A411ABaA95f017961083583cCbECbB07e8BD30
+
+# ProductCatalog
+npx hardhat verify --network baseSepolia 0xcbd1D25dD5C0b026a4A1487b529c3EfC89C278C8
 ```
 
 ### Contract Links
 - **SupplyChainPayment**: https://sepolia.basescan.org/address/0x539653dd4b32F34A8a319FCE7963D60Aa78040a1
 - **SupplierRegistry**: https://sepolia.basescan.org/address/0xD6A411ABaA95f017961083583cCbECbB07e8BD30
+- **ProductCatalog**: https://sepolia.basescan.org/address/0xcbd1D25dD5C0b026a4A1487b529c3EfC89C278C8
 - **Network Explorer**: https://sepolia.base.org
 
 ### Next Steps
