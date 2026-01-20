@@ -3,6 +3,7 @@ require("@nomicfoundation/hardhat-verify");
 require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000000";
+const BASE_MAINNET_RPC_URL = process.env.BASE_MAINNET_RPC_URL || "https://mainnet.base.org";
 const BASE_SEPOLIA_RPC_URL = process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org";
 const BASESCAN_API_KEY = process.env.BASESCAN_API_KEY || "";
 
@@ -28,7 +29,7 @@ module.exports = {
       gasPrice: "auto",
     },
     base: {
-      url: "https://mainnet.base.org",
+      url: BASE_MAINNET_RPC_URL,
       accounts: [PRIVATE_KEY],
       chainId: 8453,
       gasPrice: "auto",
