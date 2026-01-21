@@ -1,0 +1,14 @@
+{
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "deployer": "0x575109e921C6d6a1Cb7cA60Be0191B10950AfA6C",
+  "deploymentTime": "2026-01-20T13:53:27.146Z",
+  "blockNumber": 36574459,
+  "contracts": {
+    "SupplyChainToken": "0x1950165684c38B849186F8b6a5100593EF4733f9",
+    "SupplierRegistry": "0x4775C2b1530Ff7CAD6b3143cfF8fa0e05585c785",
+    "ReputationSystem": "0xDAC9bf1AEd5328B9aB0ad8238D6E7FC41B778a33",
+    "ProductCatalog": "0x2274E10680A92a4BEC4fBfE758A2e73E0145e862",
+    "SupplyChainPayment": "0xC664C097FadE25F9A6bFC20C4490697aA399578C"
+  }
+}
