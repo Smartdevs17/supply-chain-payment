@@ -59,4 +59,68 @@ describe("ProductCatalog", function () {
       ).to.be.revertedWith("Not product owner");
     });
   });
+
+  describe("Inventory Management", function () {
+    it("Should increase inventory successfully", async function () {
+      const { catalog, supplier } = await loadFixture(deployFixture);
+      
+      await catalog.connect(supplier).addProduct("Widget", "Desc", "Hash", "Cat", 100, 10);
+      
+      await expect(catalog.connect(supplier).increaseInventory(0, 5))
+        .to.emit(catalog, "InventoryUpdated")
+        .withArgs(0, 15, (await ethers.provider.getBlock('latest')).timestamp + 1);
+        
+      const product = await catalog.getProduct(0);
+      expect(product.inventory).to.equal(15);
+    });
+
+    it("Should decrease inventory successfully", async function () {
+      const { catalog, supplier } = await loadFixture(deployFixture);
+      
+      await catalog.connect(supplier).addProduct("Widget", "Desc", "Hash", "Cat", 100, 10);
+      
+      await expect(catalog.connect(supplier).decreaseInventory(0, 3))
+        .to.emit(catalog, "InventoryUpdated")
+        .withArgs(0, 7, (await ethers.provider.getBlock('latest')).timestamp + 1);
+        
+      const product = await catalog.getProduct(0);
+      expect(product.inventory).to.equal(7);
+    });
+
+    it("Should revert if insufficient inventory", async function () {
+      const { catalog, supplier } = await loadFixture(deployFixture);
+      
+      await catalog.connect(supplier).addProduct("Widget", "Desc", "Hash", "Cat", 100, 10);
+      
+      await expect(
+        catalog.connect(supplier).decreaseInventory(0, 15)
+      ).to.be.revertedWith("Insufficient inventory");
+    });
+  });
+
+  describe("Pricing", function () {
+    it("Should update price successfully", async function () {
+      const { catalog, supplier } = await loadFixture(deployFixture);
+      
+      await catalog.connect(supplier).addProduct("Widget", "Desc", "Hash", "Cat", 100, 10);
+      
+      const newPrice = ethers.parseEther("0.2");
+      await expect(catalog.connect(supplier).updatePrice(0, newPrice))
+        .to.emit(catalog, "PriceUpdated")
+        .withArgs(0, newPrice, (await ethers.provider.getBlock('latest')).timestamp + 1);
+        
+      const product = await catalog.getProduct(0);
+      expect(product.price).to.equal(newPrice);
+    });
+
+    it("Should revert if price is zero", async function () {
+      const { catalog, supplier } = await loadFixture(deployFixture);
+      
+      await catalog.connect(supplier).addProduct("Widget", "Desc", "Hash", "Cat", 100, 10);
+      
+      await expect(
+        catalog.connect(supplier).updatePrice(0, 0)
+      ).to.be.revertedWith("Price must be greater than 0");
+    });
+  });
 });
