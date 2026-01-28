@@ -214,9 +214,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     constructor() Ownable(msg.sender) {}
     
     /**
-     * @dev Register as a supplier
-     * @param _name Supplier name
-     * @param _contactInfo Contact information
+     * @notice Registers the caller as a supplier in the system
+     * @dev Initial status is unverified; requires owner verification afterwards
+     * @param _name Display name of the supplier/company
+     * @param _contactInfo Public contact details (email, phone, etc.)
      */
     function registerSupplier(string memory _name, string memory _contactInfo) external {
         require(suppliers[msg.sender].supplierAddress == address(0), "Supplier already registered");
@@ -248,9 +249,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Create a new order with escrow
-     * @param _supplier Supplier address
-     * @param _productDescription Description of products/services
+     * @notice Initiates a new order with funds held in escrow
+     * @dev Caller must send exact funds. Supplier must be verified.
+     * @param _supplier Address of the verified provider
+     * @param _productDescription Details of the order scope
      */
     function createOrder(
         address _supplier,
@@ -280,10 +282,11 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Add milestone to an order
-     * @param _orderId Order ID
-     * @param _description Milestone description
-     * @param _paymentPercentage Percentage of total amount (0-100)
+     * @notice Adds a payment milestone to an existing order
+     * @dev Deliverables must be defined before starting the order
+     * @param _orderId ID of the order
+     * @param _description What the supplier must achieve
+     * @param _paymentPercentage Percentage of total order value (1-100)
      */
     function addMilestone(
         uint256 _orderId,
@@ -315,8 +318,9 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Start order (move to InProgress)
-     * @param _orderId Order ID
+     * @notice Transitions an order to InProgress status
+     * @dev Requires milestones to total exactly 100%
+     * @param _orderId ID of the order to start
      */
     function startOrder(uint256 _orderId) external orderExists(_orderId) onlyBuyer(_orderId) {
         Order storage order = orders[_orderId];
