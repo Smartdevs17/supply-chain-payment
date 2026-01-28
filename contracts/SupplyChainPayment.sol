@@ -90,13 +90,25 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     // State variables
+    /// @notice Maps supplier address to their profile data
     mapping(address => Supplier) public suppliers;
+    
+    /// @notice Maps order ID to the full Order struct
     mapping(uint256 => Order) public orders;
+    
+    /// @notice Maps buyer address to a list of their order IDs
     mapping(address => uint256[]) public buyerOrders;
+    
+    /// @notice Maps supplier address to a list of their order IDs
     mapping(address => uint256[]) public supplierOrders;
     
+    /// @notice Incremental counter for generating unique order IDs
     uint256 public orderCounter;
+    
+    /// @notice Fee percentage taken by the platform (e.g. 1 = 1%)
     uint256 public platformFeePercentage = 1;
+    
+    /// @notice Cumulative platform fees stored in the contract in WEI
     uint256 public totalPlatformFees;
     
     // Events
