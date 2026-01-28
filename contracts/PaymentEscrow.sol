@@ -63,6 +63,15 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         _escrowIdCounter = 1;
     }
     
+    /**
+     * @notice Initializes a new escrow arrangement for an order
+     * @param _orderId Reference to the external order system
+     * @param _seller The account providing services
+     * @param _token Asset address (0 for ETH)
+     * @param _amount Requested payment amount
+     * @param _lockDuration Time in seconds before automatic release logic applies (optional)
+     * @return The unique ID assigned to this escrow
+     */
     function createEscrow(
         uint256 _orderId,
         address _seller,
@@ -92,6 +101,11 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         return escrowId;
     }
     
+    /**
+     * @notice Deposits the required funds into the escrow
+     * @dev For ERC20 tokens, requires prior approval of this contract
+     * @param _escrowId The ID of the escrow to fund
+     */
     function fundEscrow(uint256 _escrowId) external payable nonReentrant {
         Escrow storage escrow = escrows[_escrowId];
         require(escrow.status == EscrowStatus.Created, "Invalid status");
@@ -107,6 +121,11 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         emit EscrowFunded(_escrowId, escrow.amount);
     }
     
+    /**
+     * @notice Allows either party to signal approval for the funds to be released
+     * @dev When both parties have approved, the funds are automatically released
+     * @param _escrowId The ID of the escrow
+     */
     function approveRelease(uint256 _escrowId) external {
         Escrow storage escrow = escrows[_escrowId];
         require(escrow.status == EscrowStatus.Funded, "Invalid status");
@@ -124,6 +143,10 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         }
     }
     
+    /**
+     * @dev Private internal function to handle the transfer of funds
+     * @param _escrowId The ID of the escrow to release
+     */
     function _releaseFunds(uint256 _escrowId) internal {
         Escrow storage escrow = escrows[_escrowId];
         escrow.status = EscrowStatus.Completed;
@@ -137,6 +160,11 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         emit EscrowReleased(_escrowId, escrow.seller, escrow.amount);
     }
     
+    /**
+     * @notice Admin function to return funds to the buyer
+     * @dev Used in case of successful cancellation or dispute resolution
+     * @param _escrowId The ID of the escrow to refund
+     */
     function refundBuyer(uint256 _escrowId) external onlyOwner {
         Escrow storage escrow = escrows[_escrowId];
         require(escrow.status == EscrowStatus.Funded || escrow.status == EscrowStatus.Disputed, "Invalid status");
@@ -152,6 +180,10 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         emit EscrowRefunded(_escrowId, escrow.buyer, escrow.amount);
     }
     
+    /**
+     * @notice Allows a party to formally pause the escrow due to a disagreement
+     * @param _escrowId The ID of the escrow to dispute
+     */
     function raiseDispute(uint256 _escrowId) external {
         Escrow storage escrow = escrows[_escrowId];
         require(msg.sender == escrow.buyer || msg.sender == escrow.seller, "Unauthorized");
