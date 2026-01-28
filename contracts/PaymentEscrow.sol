@@ -11,8 +11,21 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  */
 contract PaymentEscrow is Ownable, ReentrancyGuard {
     
+    /// @notice Lifecycle stages of an escrow arrangement
     enum EscrowStatus { Created, Funded, Completed, Refunded, Disputed }
     
+    /**
+     * @notice Container for individual escrow transaction data
+     * @param orderId External reference to the business order
+     * @param buyer The party paying for the goods/services
+     * @param seller The party providing the goods/services
+     * @param token Address of the payment token (address(0) for Native/ETH)
+     * @param amount Total value held in escrow
+     * @param releaseTime Earliest possible time for automatic release (if implemented)
+     * @param status Current phase in the lifecycle
+     * @param buyerApproval True if buyer has signed off on release
+     * @param sellerApproval True if seller has signed off on release
+     */
     struct Escrow {
         uint256 orderId;
         address buyer;
@@ -25,7 +38,10 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
         bool sellerApproval;
     }
     
+    /// @notice Maps unique escrow IDs to their respective records
     mapping(uint256 => Escrow) public escrows;
+    
+    /// @dev Internal counter for assigning unique escrow identifiers
     uint256 private _escrowIdCounter;
     
     event EscrowCreated(uint256 indexed escrowId, uint256 orderId, address buyer, address seller, uint256 amount);
