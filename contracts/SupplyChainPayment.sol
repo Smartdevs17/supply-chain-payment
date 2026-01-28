@@ -112,16 +112,69 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     uint256 public totalPlatformFees;
     
     // Events
+    /// @notice Emitted when a new supplier registers
+    /// @param supplier Address of the supplier
+    /// @param name Name of the supplier
+    /// @param timestamp Registration time
     event SupplierRegistered(address indexed supplier, string name, uint256 timestamp);
+    
+    /// @notice Emitted when a supplier is verified by the owner
+    /// @param supplier Address of the verified supplier
+    /// @param timestamp Verification time
     event SupplierVerified(address indexed supplier, uint256 timestamp);
+    
+    /// @notice Emitted when a buyer creates a new order
+    /// @param orderId Unique ID of the order
+    /// @param buyer Address of the buyer
+    /// @param supplier Address of the supplier
+    /// @param amount Total amount locked in escrow
     event OrderCreated(uint256 indexed orderId, address indexed buyer, address indexed supplier, uint256 amount);
+    
+    /// @notice Emitted when a milestone is added to an order
+    /// @param orderId ID of the order
+    /// @param milestoneIndex Index of the new milestone
+    /// @param description Description of the milestone
+    /// @param percentage Payment percentage for this milestone
     event MilestoneAdded(uint256 indexed orderId, uint256 milestoneIndex, string description, uint256 percentage);
+    
+    /// @notice Emitted when a supplier marks a milestone as completed
+    /// @param orderId ID of the order
+    /// @param milestoneIndex Index of the completed milestone
+    /// @param timestamp Completion time
     event MilestoneCompleted(uint256 indexed orderId, uint256 milestoneIndex, uint256 timestamp);
+    
+    /// @notice Emitted when a buyer approves a milestone and releases funds
+    /// @param orderId ID of the order
+    /// @param milestoneIndex Index of the approved milestone
+    /// @param paymentAmount Amount released to the supplier
     event MilestoneApproved(uint256 indexed orderId, uint256 milestoneIndex, uint256 paymentAmount);
+    
+    /// @notice Emitted when funds are physically released to a supplier
+    /// @param orderId ID of the order
+    /// @param supplier Recipient address
+    /// @param amount Amount paid out
     event PaymentReleased(uint256 indexed orderId, address indexed supplier, uint256 amount);
+    
+    /// @notice Emitted when a party raises a dispute on an order
+    /// @param orderId ID of the order
+    /// @param raisedBy Address of the account raising the dispute
+    /// @param reason Text reason for the dispute
     event DisputeRaised(uint256 indexed orderId, address indexed raisedBy, string reason);
+    
+    /// @notice Emitted when a dispute is resolved by the owner
+    /// @param orderId ID of the order
+    /// @param resolvedBy Address of the resolver (owner)
+    /// @param inFavorOfSupplier True if supplier received the remaining funds
     event DisputeResolved(uint256 indexed orderId, address indexed resolvedBy, bool inFavorOfSupplier);
+    
+    /// @notice Emitted when an order is fully completed
+    /// @param orderId ID of the order
+    /// @param timestamp Completion time
     event OrderCompleted(uint256 indexed orderId, uint256 timestamp);
+    
+    /// @notice Emitted when an order is cancelled
+    /// @param orderId ID of the order
+    /// @param refundAmount Amount refunded to the buyer
     event OrderCancelled(uint256 indexed orderId, uint256 refundAmount);
     
     // Modifiers
