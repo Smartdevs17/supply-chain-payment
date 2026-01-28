@@ -178,21 +178,33 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     event OrderCancelled(uint256 indexed orderId, uint256 refundAmount);
     
     // Modifiers
+    /**
+     * @dev Throws if called by any account other than the buyer of the order.
+     */
     modifier onlyBuyer(uint256 _orderId) {
         require(orders[_orderId].buyer == msg.sender, "Only buyer can perform this action");
         _;
     }
     
+    /**
+     * @dev Throws if called by any account other than the supplier of the order.
+     */
     modifier onlySupplier(uint256 _orderId) {
         require(orders[_orderId].supplier == msg.sender, "Only supplier can perform this action");
         _;
     }
     
+    /**
+     * @dev Throws if the order ID is out of bounds.
+     */
     modifier orderExists(uint256 _orderId) {
         require(_orderId < orderCounter, "Order does not exist");
         _;
     }
     
+    /**
+     * @dev Throws if the supplier is not registered or not verified.
+     */
     modifier validSupplier(address _supplier) {
         require(suppliers[_supplier].supplierAddress != address(0), "Supplier not registered");
         require(suppliers[_supplier].isVerified, "Supplier not verified");
