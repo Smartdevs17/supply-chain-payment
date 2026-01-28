@@ -338,9 +338,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Mark milestone as completed (supplier)
-     * @param _orderId Order ID
-     * @param _milestoneIndex Milestone index
+     * @notice Marks a specific milestone as finished
+     * @dev Only the assigned supplier can call this
+     * @param _orderId ID of the order
+     * @param _milestoneIndex Index of the finished deliverable
      */
     function completeMilestone(
         uint256 _orderId,
@@ -358,9 +359,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Approve milestone and release payment (buyer)
-     * @param _orderId Order ID
-     * @param _milestoneIndex Milestone index
+     * @notice Verifies milestone completion and releases partial payment
+     * @dev Funds are sent to supplier minus platform fee
+     * @param _orderId ID of the order
+     * @param _milestoneIndex Index of the deliverable to pay for
      */
     function approveMilestone(
         uint256 _orderId,
@@ -411,9 +413,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Raise a dispute
-     * @param _orderId Order ID
-     * @param _reason Dispute reason
+     * @notice Freezes an order due to conflict
+     * @dev Can be called by buyer or supplier
+     * @param _orderId ID of the disputed order
+     * @param _reason Narrative explaining the conflict
      */
     function raiseDispute(
         uint256 _orderId,
@@ -436,9 +439,10 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Resolve dispute (only owner)
-     * @param _orderId Order ID
-     * @param _inFavorOfSupplier True if resolving in favor of supplier
+     * @notice Finalizes a disputed order and distributes remaining funds
+     * @dev Only the owner can resolve disputes
+     * @param _orderId ID of the order
+     * @param _inFavorOfSupplier If true, supplier gets paid; if false, buyer gets refunded
      */
     function resolveDispute(
         uint256 _orderId,
@@ -478,8 +482,9 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Cancel order (only if not started)
-     * @param _orderId Order ID
+     * @notice Cancels an order before work starts
+     * @dev Only allowed if order is in Created state. Full refund to buyer.
+     * @param _orderId ID of the order to cancel
      */
     function cancelOrder(uint256 _orderId) external orderExists(_orderId) onlyBuyer(_orderId) nonReentrant {
         Order storage order = orders[_orderId];
