@@ -44,10 +44,19 @@ contract PaymentEscrow is Ownable, ReentrancyGuard {
     /// @dev Internal counter for assigning unique escrow identifiers
     uint256 private _escrowIdCounter;
     
+    /// @notice Emitted when a new escrow agreement is recorded
     event EscrowCreated(uint256 indexed escrowId, uint256 orderId, address buyer, address seller, uint256 amount);
+    
+    /// @notice Emitted when the buyer deposits the required funds
     event EscrowFunded(uint256 indexed escrowId, uint256 amount);
+    
+    /// @notice Emitted when funds are successfully released to the seller
     event EscrowReleased(uint256 indexed escrowId, address recipient, uint256 amount);
+    
+    /// @notice Emitted when funds are returned to the buyer (refund)
     event EscrowRefunded(uint256 indexed escrowId, address recipient, uint256 amount);
+    
+    /// @notice Emitted when a dispute is formally raised by either party
     event EscrowDisputed(uint256 indexed escrowId);
     
     constructor() Ownable(msg.sender) {
