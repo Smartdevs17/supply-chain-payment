@@ -11,6 +11,16 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 contract SupplyChainPayment is Ownable, ReentrancyGuard {
     
     // Structs
+    /**
+     * @notice Stores information about a registered supplier
+     * @param supplierAddress Address of the supplier account
+     * @param name Registered name of the supplier
+     * @param contactInfo Encrypted or public contact details
+     * @param isVerified Whether the supplier has passed KYC/compliance
+     * @param totalOrdersCompleted Cumulative count of successfully finished orders
+     * @param totalAmountEarned Total funds paid out to this supplier in WEI
+     * @param registrationDate Timestamp of registration
+     */
     struct Supplier {
         address supplierAddress;
         string name;
@@ -21,6 +31,15 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         uint256 registrationDate;
     }
     
+    /**
+     * @notice Represents a specific stage/deliverable in an order
+     * @param description Narrative of what needs to be achieved
+     * @param paymentPercentage Portion of total order amount released on completion (0-100)
+     * @param isCompleted True if supplier has finished the milestone
+     * @param isApproved True if buyer has verified and released funds for the milestone
+     * @param completionDate Timestamp when supplier marked as complete
+     * @param approvalDate Timestamp when buyer approved payment
+     */
     struct Milestone {
         string description;
         uint256 paymentPercentage;
@@ -30,6 +49,20 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
         uint256 approvalDate;
     }
     
+    /**
+     * @notice Full data for an active or past order
+     * @param orderId Unique identifier for the order
+     * @param buyer Address of the client/importer
+     * @param supplier Address of the vendor/manufacturer
+     * @param productDescription Summary of the goods being procured
+     * @param totalAmount Total value of the order locked in escrow
+     * @param paidAmount Amount already released to the supplier
+     * @param createdDate Timestamp of order initiation
+     * @param status Current lifecycle state of the order
+     * @param milestones Array of deliverables for this order
+     * @param disputeRaised True if an active dispute is open
+     * @param disputeReason Text description of the conflict
+     */
     struct Order {
         uint256 orderId;
         address buyer;
@@ -45,12 +78,15 @@ contract SupplyChainPayment is Ownable, ReentrancyGuard {
     }
     
     // Enums
+    /**
+     * @notice Possible states an order can transition through
+     */
     enum OrderStatus {
-        Created,
-        InProgress,
-        Completed,
-        Cancelled,
-        Disputed
+        Created,      // Just opened, milestones being defined
+        InProgress,   // Active production/shipping
+        Completed,    // All milestones approved and funds released
+        Cancelled,    // Refunded before start or after dispute
+        Disputed      // Paused due to conflict
     }
     
     // State variables
