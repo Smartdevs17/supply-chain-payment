@@ -1,5 +1,6 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
+const { expect } = require("chai");
+const hre = require("hardhat");
+const { ethers } = hre;
 
 describe("PackagingValidator", function () {
   it("Should validate package types correctly", async function () {

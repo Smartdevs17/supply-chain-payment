@@ -1,5 +1,6 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
+const { expect } = require("chai");
+const hre = require("hardhat");
+const { ethers } = hre;
 
 describe("QualityStandards", function () {
   it("Should validate against standards", async function () {

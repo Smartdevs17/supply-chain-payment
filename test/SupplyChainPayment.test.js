@@ -1,5 +1,6 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const hre = require("hardhat");
+const { ethers } = hre;
 
 describe("SupplyChainPayment", function () {
     let supplyChainPayment;
@@ -40,9 +41,13 @@ describe("SupplyChainPayment", function () {
         });
 
         it("Should emit SupplierRegistered event", async function () {
-            await expect(supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com"))
+            const tx = await supplyChainPayment.connect(supplier).registerSupplier("Test Supplier", "test@supplier.com");
+            const receipt = await tx.wait();
+            const block = await ethers.provider.getBlock(receipt.blockNumber);
+            
+            await expect(tx)
                 .to.emit(supplyChainPayment, "SupplierRegistered")
-                .withArgs(supplier.address, "Test Supplier", await ethers.provider.getBlock('latest').then(b => b.timestamp + 1));
+                .withArgs(supplier.address, "Test Supplier", block.timestamp);
         });
 
         it("Should not allow duplicate registration", async function () {

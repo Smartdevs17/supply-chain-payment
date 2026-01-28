@@ -1,5 +1,6 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const hre = require("hardhat");
+const { ethers } = hre;
 
 describe("ShippingTracker", function () {
   let shippingTracker, owner, shipper, origin, destination;

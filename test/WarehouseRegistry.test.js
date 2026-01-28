@@ -1,5 +1,6 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const hre = require("hardhat");
+const { ethers } = hre;
 
 describe("WarehouseRegistry", function () {
   let registry, owner, manager1, manager2;

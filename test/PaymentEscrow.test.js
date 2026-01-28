@@ -1,6 +1,7 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers.js";
+const { expect } = require("chai");
+const hre = require("hardhat");
+const { ethers } = hre;
+const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 describe("PaymentEscrow", function () {
   async function deployFixture() {
